@@ -1,0 +1,50 @@
+---
+title: "RLS"
+author: "Juan Manuel Cabrera"
+date: "2023-07-29"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#Libraries
+library(caTools)
+library(ggplot2)
+```
+
+```{r}
+#Importar dataset
+salary <- read.csv('Datas/Salary_Data.csv')
+```
+
+```{r}
+#Grap
+ggplot(salary, aes(YearsExperience, Salary))+
+  geom_point() +
+  stat_smooth(method="lm")
+```
+
+
+```{r}
+#Splitting the dataset into the taining set and test set
+set.seed(123)
+split <- sample.split(salary$Salary, SplitRatio = 2/3)
+training_set <- subset(salary, split == T)
+test_set <- subset(salary, split == F)
+```
+
+
+```{r}
+#Fitting Simple Linear Regression to the Training set
+model <- lm(Salary ~ YearsExperience,
+            data = salary)
+
+summary(model)
+```
+
+
+
+
