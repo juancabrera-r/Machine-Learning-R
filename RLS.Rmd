@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-#Libraries
+#Librarias
 library(caTools)
 library(ggplot2)
 ```
@@ -18,18 +18,57 @@ library(ggplot2)
 ```{r}
 #Importar dataset
 salary <- read.csv('Datas/Salary_Data.csv')
+
 ```
 
 ```{r}
-#Grap
+#Gráfico de dispersión
 ggplot(salary, aes(YearsExperience, Salary))+
   geom_point() +
   stat_smooth(method="lm")
+
 ```
 
 
 ```{r}
-#Splitting the dataset into the taining set and test set
+#Modelado
+model <- lm(Salary ~ YearsExperience,
+            data = salary)
+
+summary(model)
+```
+Resultado de los datos:
+
+Ecuación del modelo Y = 25792.2 + 9450*x
+
+p-value inferior al 0.05 (nivel de significación del 5%)
+
+R2 = 0.957
+
+La prueba F: F(1,28) = 622, p < 0.001)
+
+```{r}
+sigma(model)
+```
+Error estándar residual (RSE) o sigma = 5788.315
+
+```{r}
+sigma(model)*100 / mean(salary$Salary)
+```
+
+Tasa de error de predicción = 7.615903 %
+
+
+```{r}
+summary(model)$coefficients
+```
+
+```{r}
+confint(model)
+```
+```{r}
+
+#Dividimos el data set en set de training y set de test.
 set.seed(123)
 split <- sample.split(salary$Salary, SplitRatio = 2/3)
 training_set <- subset(salary, split == T)
@@ -37,14 +76,23 @@ test_set <- subset(salary, split == F)
 ```
 
 
-```{r}
-#Fitting Simple Linear Regression to the Training set
-model <- lm(Salary ~ YearsExperience,
-            data = salary)
+Prediciendo  resultados:
 
-summary(model)
+```{r}
+y_pred <- predict(model, newdate = test_set)
+
 ```
 
 
+Graficamos
 
+```{r}
+ggplot() +
+  geom_point(aes(training_set$YearsExperience, training_set$Salary), color='red') +
+  
+  geom_point(aes(test_set$YearsExperience, predict(model, test_set)), color='green') +
+  
+  geom_line(aes(training_set$YearsExperience, predict(model, training_set)), color='blue')
+  
+```
 
